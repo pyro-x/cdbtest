@@ -4,7 +4,7 @@ from fastapi_asyncpg import configure_asyncpg
 
 app = FastAPI()
 
-dsn ="postgresql://postgres:mysecretpassword@localhost/gis"
+dsn ="postgresql://postgres:cdbtest@localhost/gis"
 db = configure_asyncpg(app,dsn)
 @db.on_init
 async def initialization(conn):

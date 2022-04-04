@@ -1,0 +1,30 @@
+version: "3.3"
+services:
+  backend:
+    container_name: backend-api-cdbtest
+    build:
+      context: api
+      dockerfile: Dockerfile
+    image: backend-api
+    environment:
+       POSTGRES_PASSWORD: cdbtest
+    hostname: backend-api
+    ports:
+      - "8000:80"
+    depends_on:
+      - "gis-server"
+  gis-server:
+    container_name: giscdb
+    build:
+      context: gis_server
+      dockerfile: Dockerfile
+    image: giscdbtest
+    environment:
+       POSTGRES_PASSWORD: cdbtest
+    hostname: giscdb
+    ports:
+      - "5432:5432"
+
+
+
+
