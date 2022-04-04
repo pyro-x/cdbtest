@@ -1,68 +1,54 @@
-from fastapi import FastAPI
-from config import config
-import psycopg2
+from fastapi import FastAPI,Depends
+from fastapi_asyncpg import configure_asyncpg
+
+
 app = FastAPI()
 
+dsn ="postgresql://postgres:mysecretpassword@localhost/gis"
+db = configure_asyncpg(app,dsn)
+@db.on_init
+async def initialization(conn):
+    # force to have this initiator or it won't configure itself properly
+    await conn.execute("SELECT 1")
 
-
-try:
-    params = config()
-    conn = psycopg2.connect(**params)
-except:
-    print("I am unable to connect to the database")
-
+@app.on_event("startup")
+async def startup():
+    print ("Starting up ....")
 
 @app.get('/')
 async def root():
     return {'pof': 'CartoDB GIS'} 
 
 @app.get('/turnover/')
-def turnover():
+async def turnover(db=Depends(db.connection)):
 
-    cur = conn.cursor()
-    cur.execute("SELECT sum(amount) FROM payment_stats")
-    for record in cur.fetchall():
-        return {'turnover': record}
+    record = await db.fetch("SELECT round(sum(amount)) FROM payment_stats")
+    return {'turnover': record}
 
 
 @app.get('/turnover_fromdate_todate/{fromdate}/{todate}')
-def turnover_from_date_to_date(fromdate: str, todate: str):
+async def turnover_from_date_to_date(fromdate: str, todate: str,db=Depends(db.connection)):
     print ("from data:" + fromdate)
-    cur = conn.cursor()
-
-    try:
-        cur.execute("SELECT round(sum(amount)) FROM payment_stats WHERE p_month >= %s AND p_month < %s", (fromdate, todate))
-        for record in cur.fetchall():
-            return {'turnover': record}
-    except Exception as error:
-        print ("Error: unable to fetch data")
-        print(error)  
+    record = await db.fetch ("SELECT round(sum(amount)) FROM payment_stats WHERE p_month >= $1 AND p_month <= $2", fromdate, todate)
+    return {'turnover': record}
+    
 
 
 @app.get('/turnover/series/{fromdate}/{todate}')
-def turnover_series(fromdate: str, todate: str):
-    cur = conn.cursor()
-    cur.execute("SELECT p_month, round(sum(amount)) FROM payment_stats WHERE p_month >= %s AND p_month < %s GROUP BY p_month", (fromdate, todate))
-    records = cur.fetchall()
-    return {'turnover': records}
+async def turnover_series(fromdate: str, todate: str,db=Depends(db.connection)):
+    record = await db.fetch ("SELECT p_month as month, round(sum(amount)) as total FROM payment_stats WHERE p_month >= $1 AND p_month < $2 GROUP BY p_month", fromdate, todate)
+    return {'turnover': record}
 
-
-    pass
-   
 @app.get('/turnover/postal_code/{postal_code}')
-def turnover_by_postal_code  (postal_code: str):
-    cur = conn.cursor()
-    cur.execute("SELECT round(sum(amount)) FROM payment_stats WHERE postal_code = %s", (postal_code))
-    for record in cur.fetchall():
-        return {'turnover': record}
+async def turnover_by_postal_code  (postal_code: str,db=Depends(db.connection)):
+    record = await db.fetch ("select round(sum(ps.amount)) from payment_stats as ps, postal_codes as pc where ps.postal_code_id = pc.id and pc.code=$1", (postal_code))
+    return {'turnover': record}
 
 
 @app.get('/turnover/postal_code/by_age_and_gender/{postal_code}/')
-def turnover_by_postal_code_age_and_gender(postal_code:str):
-    cur = conn.cursor()
-    cur.execute ('SELECT p_age, p_gender, round(sum(amount)) as agegender_amount FROM payment_stats  GROUP BY p_age,p_gender ')
-    records =  cur.fetchall()
-    return {'turnover': records}
+async def turnover_by_postal_code_age_and_gender(postal_code:str,db=Depends(db.connection)):
+    record = await db.fetch ("SELECT p_age, p_gender, round(sum(amount)) as agegender_amount FROM payment_stats  GROUP BY p_age,p_gender")
+    return {'turnover': record}
 
 
 
