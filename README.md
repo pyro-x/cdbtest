@@ -8,7 +8,7 @@ Initial assumptions
 * There are two tables at the db from the two csv files one for the postal codes and the other one with the payment data
 * There are also some postgis cities layer (postal codes are rendered on top )
 * Frontend knows how to draw a GEO JSON layer
-
+* geometry is assumed to be EPSG 4326 (WGS84)
 ## How to run the project via Docker
 In the project a docker compose yaml is provided to run it just..
 
@@ -18,7 +18,7 @@ In the project a docker compose yaml is provided to run it just..
 $ docker-compose build
 
 # once built you can start the images
-# backend server will be available at http://localhost:8000 and api doc at 
+# backend server will be available at http://localhost:8000/docs
 $ docker-compose up 
 
 # once you get bored you can just bring everything down with 
