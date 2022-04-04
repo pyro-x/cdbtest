@@ -1,4 +1,6 @@
 
+tried to run the https://github.com/ihmeuw/cartodb-docker project, but i lost a lot of time trying to build it...because not available dependecies,
+at the end i opted to base my container on the postgis/postgis container from dockerhub  with ann added initialization script for creating the database and populate it .
 
 
 got an error when installing psycopg2 
@@ -6,10 +8,8 @@ got an error when installing psycopg2
        36 | #include <libpq-fe.h>
           |          ^~~~~~~~~~~~
 
-
-
 i had to reinstall libpq-dev just in case this ends up in a container and is needed 
 pyro-x@pt-500255:~$ sudo apt-get install --reinstall libpq-dev
 
 
-had some problems with python backend spawing up when postgis wasn't ready yet
+had some problems with python backend spawing up when postgis wasn't ready yet... found a workaround to wait for the 5432 port.  

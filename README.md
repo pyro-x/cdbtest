@@ -1,5 +1,5 @@
 # a cartodb test 
-This project creates an small python-based backend that serve geo content and payment data to a very nice frontend that knows how to render it.
+This project creates a small python-based backend served that gives geo content and payment data to a very nice frontend that knows how to render it.
 
 Backend is based on python with fastapi , asyncpg as the db connector and fastapi_asyncpg module as an effective bridge between.
 The python server talks to a postgis database that contains all the needed tables.
@@ -20,7 +20,7 @@ $ docker-compose build
 # once built you can start the images
 $ docker-compose up 
 
-# once you get bored you can just bring everything down with ;
+# once you get bored you can just bring everything down with 
 $ docker-compose down 
 ```
 
