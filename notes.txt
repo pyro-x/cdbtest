@@ -1,0 +1,12 @@
+
+
+
+got an error when installing psycopg2 
+    ./psycopg/psycopg.h:36:10: fatal error: libpq-fe.h: No such file or directory
+       36 | #include <libpq-fe.h>
+          |          ^~~~~~~~~~~~
+
+
+
+i had to reinstall libpq-dev just in case this ends up in a container and is needed 
+pyro-x@pt-500255:~$ sudo apt-get install --reinstall libpq-dev
