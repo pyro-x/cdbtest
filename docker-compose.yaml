@@ -5,15 +5,15 @@ services:
     build:
       context: api
       dockerfile: Dockerfile
+    command: bash -c "echo waiting for postgis ; while !</dev/tcp/db/5432 ; sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port 80 ;"
     image: backend-api
     environment:
        POSTGRES_PASSWORD: cdbtest
-    hostname: backend-api
     ports:
       - "8000:80"
     depends_on:
       - "gis-server"
-  gis-server:
+  db:
     container_name: giscdb
     build:
       context: gis_server
@@ -21,7 +21,6 @@ services:
     image: giscdbtest
     environment:
        POSTGRES_PASSWORD: cdbtest
-    hostname: giscdb
     ports:
       - "5432:5432"
 

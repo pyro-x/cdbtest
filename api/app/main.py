@@ -3,9 +3,13 @@ from fastapi_asyncpg import configure_asyncpg
 
 
 app = FastAPI()
+dsn ="postgresql://postgres:cdbtest@db/gis"
+try :
+    db = configure_asyncpg(app,dsn)
+except Exception as e:
+    print ("Error: " + str(e))
+    exit()
 
-dsn ="postgresql://postgres:cdbtest@localhost/gis"
-db = configure_asyncpg(app,dsn)
 @db.on_init
 async def initialization(conn):
     # had to have this initiator or it won't configure itself properly
