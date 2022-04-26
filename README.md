@@ -1,4 +1,4 @@
-# a carto db test 
+# a carto test 
 This project creates a small python-based backend server that gives geo content and payment data to a very nice frontend that knows how to render it.
 
 Backend is based on python with fastapi , asyncpg as the db connector and fastapi_asyncpg module as an effective bridge between.
